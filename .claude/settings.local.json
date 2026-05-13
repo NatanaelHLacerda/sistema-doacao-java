@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /home/natanael/Documents/projeto-doacao/.claude/agents)",
+      "Bash(mv /home/natanael/.claude/agents/java-tutor-poo.md /home/natanael/Documents/projeto-doacao/.claude/agents/)",
+      "Bash(java -version)",
+      "Bash(mvn -version)",
+      "Bash(gradle -version)",
+      "Read(//usr/lib/**)",
+      "Read(//home/natanael/.sdkman/candidates/**)",
+      "Bash(apt list *)",
+      "Bash(sudo apt update)",
+      "Bash(sudo apt install -y openjdk-17-jdk maven)",
+      "Bash(javac -version)",
+      "Bash(mvn -q compile)",
+      "Bash(mvn compile *)",
+      "Bash(timeout 8 mvn javafx:run)",
+      "Bash(echo \"---exit: $?\")",
+      "Bash(timeout 10 mvn javafx:run)",
+      "Bash(tee /tmp/jfx-run.log)",
+      "Bash(mvn -q dependency:resolve)",
+      "Bash(mvn -q dependency:resolve-plugins)",
+      "Bash(timeout 15 mvn javafx:run)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(curl -L -o eclipse-installer.tar.gz \"https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-12/R/eclipse-java-2024-12-R-linux-gtk-x86_64.tar.gz&r=1\")"
+    ]
+  }
+}

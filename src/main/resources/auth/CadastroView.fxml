@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane styleClass="page-bg"
+           xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="auth.CadastroController">
+
+    <VBox styleClass="card" maxWidth="400" maxHeight="-Infinity"
+          alignment="TOP_LEFT" spacing="20">
+        <padding>
+            <Insets top="32" right="32" bottom="32" left="32"/>
+        </padding>
+
+        <VBox spacing="6">
+            <Label text="Criar conta" styleClass="h1"/>
+            <Label text="Cadastre-se para acessar o sistema de doação." styleClass="label-muted"/>
+        </VBox>
+
+        <VBox spacing="6">
+            <Label text="Usuário" styleClass="caption"/>
+            <TextField fx:id="campoUsuario"
+                       styleClass="input-field"
+                       promptText="Escolha um nome de usuário"/>
+        </VBox>
+
+        <VBox spacing="6">
+            <Label text="Senha" styleClass="caption"/>
+            <PasswordField fx:id="campoSenha"
+                           styleClass="input-field"
+                           promptText="Crie uma senha"/>
+        </VBox>
+
+        <Label fx:id="labelMensagem" styleClass="label-error" wrapText="true"/>
+
+        <HBox spacing="12" alignment="CENTER">
+            <Button text="Voltar"
+                    styleClass="btn-secondary"
+                    onAction="#onClickVoltar"
+                    cancelButton="true"
+                    HBox.hgrow="ALWAYS"
+                    maxWidth="Infinity"/>
+            <Button text="Cadastrar"
+                    styleClass="btn-primary"
+                    onAction="#onClickCadastrar"
+                    defaultButton="true"
+                    HBox.hgrow="ALWAYS"
+                    maxWidth="Infinity"/>
+        </HBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+    </VBox>
+</StackPane>

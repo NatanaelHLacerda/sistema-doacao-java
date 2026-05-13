@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="home.PrincipalController"
+            style="-fx-background-color: #f1f5f9;">
+
+    <top>
+        <HBox styleClass="app-header" alignment="CENTER_LEFT" spacing="16">
+            <Label text="Sistema de Doação" styleClass="app-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="labelBoasVindas" styleClass="app-user-pill"/>
+            <Button text="Sair" styleClass="btn-ghost" onAction="#onClickSair"/>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane styleClass="page-bg">
+            <VBox styleClass="card" maxWidth="520" maxHeight="-Infinity"
+                  alignment="TOP_LEFT" spacing="20">
+                <padding>
+                    <Insets top="32" right="32" bottom="32" left="32"/>
+                </padding>
+
+                <VBox spacing="6">
+                    <Label text="Painel principal" styleClass="h1"/>
+                    <Label text="Teste rápido: digite um nome e veja a saudação."
+                           styleClass="label-muted"
+                           wrapText="true"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Nome" styleClass="caption"/>
+                    <TextField fx:id="campoNome"
+                               styleClass="input-field"
+                               promptText="Digite um nome"/>
+                </VBox>
+
+                <HBox alignment="CENTER_RIGHT">
+                    <Button text="Saudar"
+                            styleClass="btn-primary"
+                            onAction="#onClickSaudar"
+                            defaultButton="true"/>
+                </HBox>
+
+                <Label fx:id="labelMensagem" styleClass="label-success" wrapText="true"/>
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>

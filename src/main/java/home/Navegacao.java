@@ -36,11 +36,7 @@ public final class Navegacao {
             ItemFormController controller = loader.getController();
             controller.inicializar(stage, itemParaEditar);
 
-            Scene scene = new Scene(root, 560, 560);
-            scene.getStylesheets().add(
-                    Navegacao.class.getResource("/styles/app.css").toExternalForm());
-            stage.setScene(scene);
-            stage.setTitle(itemParaEditar == null ? "Novo Item" : "Editar Item");
+            aplicarRoot(stage, root, itemParaEditar == null ? "Novo Item" : "Editar Item", 560, 560);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,13 +47,22 @@ public final class Navegacao {
         try {
             FXMLLoader loader = new FXMLLoader(Navegacao.class.getResource(fxml));
             Parent root = loader.load();
-            Scene scene = new Scene(root, w, h);
-            scene.getStylesheets().add(
-                    Navegacao.class.getResource("/styles/app.css").toExternalForm());
-            stage.setScene(scene);
-            stage.setTitle(titulo);
+            aplicarRoot(stage, root, titulo, w, h);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void aplicarRoot(Stage stage, Parent root, String titulo, int w, int h) {
+        Scene scene = stage.getScene();
+        if (scene == null) {
+            scene = new Scene(root, w, h);
+            scene.getStylesheets().add(
+                    Navegacao.class.getResource("/styles/app.css").toExternalForm());
+            stage.setScene(scene);
+        } else {
+            scene.setRoot(root);
+        }
+        stage.setTitle(titulo);
     }
 }

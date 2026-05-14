@@ -239,6 +239,25 @@
     -fx-text-fill: white;
 }
 
+.product-thumb-emoji {
+    -fx-font-size: 64px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 6, 0, 0, 2);
+}
+
+.image-preview {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 12;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 12;
+    -fx-border-style: dashed;
+    -fx-border-width: 1.5;
+}
+
+.image-preview-placeholder {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 13px;
+}
+
 .product-body {
     -fx-padding: 14 16 14 16;
     -fx-spacing: 8;

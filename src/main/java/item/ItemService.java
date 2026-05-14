@@ -11,11 +11,15 @@ public class ItemService {
     }
 
     public boolean cadastrar(String nome, String categoria, String descricao, int quantidade) {
+        return cadastrar(nome, categoria, descricao, quantidade, null);
+    }
+
+    public boolean cadastrar(String nome, String categoria, String descricao, int quantidade, String imagemPath) {
         if (nome == null || nome.isBlank()) return false;
         if (categoria == null || categoria.isBlank()) return false;
         if (quantidade <= 0) return false;
 
-        Item item = new Item(nome.trim(), categoria.trim(), descricao, quantidade);
+        Item item = new Item(nome.trim(), categoria.trim(), descricao, quantidade, imagemPath);
         return itemDAO.salvar(item);
     }
 

@@ -16,12 +16,19 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.util.Locale;
+import java.util.Map;
 
 public class CatalogoController {
 
@@ -38,10 +45,37 @@ public class CatalogoController {
     private final ObservableList<Item> listaObservavel = FXCollections.observableArrayList();
     private FilteredList<Item> listaFiltrada;
 
-    private static final String[] CORES_THUMB = {
-            "#2563eb", "#0ea5e9", "#16a34a", "#f59e0b",
-            "#dc2626", "#a855f7", "#ec4899", "#0d9488"
-    };
+    private static final Map<String, String> EMOJI_POR_CATEGORIA = Map.ofEntries(
+            Map.entry("roupas", "👕"),
+            Map.entry("calçados", "👟"),
+            Map.entry("calcados", "👟"),
+            Map.entry("livros", "📚"),
+            Map.entry("acessórios", "🎒"),
+            Map.entry("acessorios", "🎒"),
+            Map.entry("casa", "🏠"),
+            Map.entry("eletrônicos", "📱"),
+            Map.entry("eletronicos", "📱"),
+            Map.entry("brinquedos", "🧸"),
+            Map.entry("higiene", "🧼"),
+            Map.entry("alimentos", "🍞")
+    );
+
+    private static final Map<String, String[]> GRADIENTE_POR_CATEGORIA = Map.ofEntries(
+            Map.entry("roupas",      new String[]{"#fb7185", "#be123c"}),
+            Map.entry("calçados",    new String[]{"#a78bfa", "#6d28d9"}),
+            Map.entry("calcados",    new String[]{"#a78bfa", "#6d28d9"}),
+            Map.entry("livros",      new String[]{"#60a5fa", "#1d4ed8"}),
+            Map.entry("acessórios",  new String[]{"#fbbf24", "#b45309"}),
+            Map.entry("acessorios",  new String[]{"#fbbf24", "#b45309"}),
+            Map.entry("casa",        new String[]{"#34d399", "#047857"}),
+            Map.entry("eletrônicos", new String[]{"#22d3ee", "#0e7490"}),
+            Map.entry("eletronicos", new String[]{"#22d3ee", "#0e7490"}),
+            Map.entry("brinquedos",  new String[]{"#f472b6", "#a21caf"}),
+            Map.entry("higiene",     new String[]{"#5eead4", "#0f766e"}),
+            Map.entry("alimentos",   new String[]{"#fb923c", "#b45309"})
+    );
+
+    private static final String[] GRADIENTE_PADRAO = {"#94a3b8", "#475569"};
 
     @FXML
     public void initialize() {
@@ -96,12 +130,7 @@ public class CatalogoController {
         card.setMaxWidth(240);
         card.setMinWidth(240);
 
-        StackPane thumb = new StackPane();
-        thumb.getStyleClass().add("product-thumb");
-        thumb.setStyle("-fx-background-color: " + corPara(item) + "; -fx-background-radius: 12 12 0 0;");
-        Label inicial = new Label(iniciaisDe(item.getNome()));
-        inicial.getStyleClass().add("product-thumb-label");
-        thumb.getChildren().add(inicial);
+        StackPane thumb = criarThumb(item);
 
         VBox corpo = new VBox();
         corpo.getStyleClass().add("product-body");
@@ -148,22 +177,57 @@ public class CatalogoController {
         VBox.setVgrow(corpo, javafx.scene.layout.Priority.ALWAYS);
 
         card.getChildren().addAll(thumb, corpo);
-        card.setPrefHeight(340);
+        card.setPrefHeight(360);
         return card;
     }
 
-    private String corPara(Item item) {
-        int hash = Math.abs((item.getCategoria() + item.getNome()).hashCode());
-        return CORES_THUMB[hash % CORES_THUMB.length];
+    private StackPane criarThumb(Item item) {
+        StackPane thumb = new StackPane();
+        thumb.getStyleClass().add("product-thumb");
+        thumb.setPrefHeight(160);
+        thumb.setMinHeight(160);
+        thumb.setMaxHeight(160);
+
+        if (ImagemStorage.existe(item.getImagemPath())) {
+            ImageView iv = new ImageView(new Image(
+                    new File(item.getImagemPath()).toURI().toString(),
+                    240, 160, true, true, true));
+            iv.setFitWidth(240);
+            iv.setFitHeight(160);
+            iv.setPreserveRatio(true);
+            iv.setSmooth(true);
+
+            Rectangle clip = new Rectangle(240, 160);
+            clip.setArcWidth(20);
+            clip.setArcHeight(20);
+            iv.setClip(clip);
+
+            thumb.setStyle("-fx-background-color: #e2e8f0; -fx-background-radius: 12 12 0 0;");
+            thumb.getChildren().add(iv);
+        } else {
+            String[] cores = gradientePara(item.getCategoria());
+            thumb.setStyle(
+                    "-fx-background-color: linear-gradient(to bottom right, "
+                    + cores[0] + ", " + cores[1] + ");"
+                    + " -fx-background-radius: 12 12 0 0;");
+            Label icone = new Label(emojiPara(item.getCategoria()));
+            icone.getStyleClass().add("product-thumb-emoji");
+            icone.setStyle("-fx-font-size: 64px;");
+            thumb.getChildren().add(icone);
+        }
+        return thumb;
     }
 
-    private String iniciaisDe(String nome) {
-        if (nome == null || nome.isBlank()) return "?";
-        String[] partes = nome.trim().split("\\s+");
-        if (partes.length == 1) {
-            return partes[0].substring(0, Math.min(2, partes[0].length())).toUpperCase();
-        }
-        return ("" + partes[0].charAt(0) + partes[1].charAt(0)).toUpperCase();
+    private String emojiPara(String categoria) {
+        if (categoria == null) return "📦";
+        return EMOJI_POR_CATEGORIA.getOrDefault(
+                categoria.toLowerCase(Locale.ROOT).trim(), "📦");
+    }
+
+    private String[] gradientePara(String categoria) {
+        if (categoria == null) return GRADIENTE_PADRAO;
+        return GRADIENTE_POR_CATEGORIA.getOrDefault(
+                categoria.toLowerCase(Locale.ROOT).trim(), GRADIENTE_PADRAO);
     }
 
     private void confirmarEExcluir(Item item) {

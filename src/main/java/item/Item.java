@@ -7,20 +7,27 @@ public class Item {
     private String categoria;
     private String descricao;
     private int quantidade;
+    private String imagemPath;
 
     public Item(String nome, String categoria, String descricao, int quantidade) {
-        this.nome = nome;
-        this.categoria = categoria;
-        this.descricao = descricao;
-        this.quantidade = quantidade;
+        this(0, nome, categoria, descricao, quantidade, null);
     }
 
     public Item(int id, String nome, String categoria, String descricao, int quantidade) {
+        this(id, nome, categoria, descricao, quantidade, null);
+    }
+
+    public Item(String nome, String categoria, String descricao, int quantidade, String imagemPath) {
+        this(0, nome, categoria, descricao, quantidade, imagemPath);
+    }
+
+    public Item(int id, String nome, String categoria, String descricao, int quantidade, String imagemPath) {
         this.id = id;
         this.nome = nome;
         this.categoria = categoria;
         this.descricao = descricao;
         this.quantidade = quantidade;
+        this.imagemPath = imagemPath;
     }
 
     public int getId() { return id; }
@@ -37,6 +44,9 @@ public class Item {
 
     public int getQuantidade() { return quantidade; }
     public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
+
+    public String getImagemPath() { return imagemPath; }
+    public void setImagemPath(String imagemPath) { this.imagemPath = imagemPath; }
 
     @Override
     public String toString() {

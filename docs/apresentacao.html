@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sistema de Doação — Apresentação</title>
+<style>
+  :root {
+    --bg-0: #0f172a;
+    --bg-1: #1e293b;
+    --bg-2: #334155;
+    --fg: #e2e8f0;
+    --fg-dim: #94a3b8;
+    --accent: #38bdf8;
+    --accent-2: #a78bfa;
+    --good: #34d399;
+    --bad: #f87171;
+    --code-bg: #0b1220;
+    --shadow: 0 20px 60px rgba(0,0,0,.45);
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: radial-gradient(circle at 20% 20%, #1e293b 0, #0f172a 60%);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+  }
+  .deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 5vh 7vw;
+    opacity: 0; transform: translateX(40px); pointer-events: none;
+    transition: opacity .35s ease, transform .35s ease;
+    overflow-y: auto;
+  }
+  .slide.active { opacity: 1; transform: none; pointer-events: auto; }
+  .slide h1 {
+    font-size: clamp(2rem, 4.5vw, 3.4rem);
+    margin: 0 0 .4em;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-align: center;
+    letter-spacing: -.5px;
+  }
+  .slide h2 {
+    font-size: clamp(1.4rem, 2.2vw, 2rem);
+    margin: 0 0 1rem; color: var(--accent);
+    border-left: 4px solid var(--accent); padding-left: 12px;
+  }
+  .slide h3 {
+    font-size: 1.15rem; margin: 1rem 0 .4rem; color: var(--accent-2);
+  }
+  .slide p, .slide li { line-height: 1.55; font-size: clamp(1rem, 1.3vw, 1.18rem); }
+  .slide ul { padding-left: 1.2em; }
+  .slide ul li { margin-bottom: .35em; }
+  .slide strong { color: var(--fg); }
+  .slide em { color: var(--accent); font-style: normal; font-weight: 600; }
+  .subtitle { color: var(--fg-dim); font-size: 1.2rem; text-align: center; }
+  .container {
+    width: min(1100px, 100%);
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(148,163,184,0.18);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: clamp(1.2rem, 3vw, 2.5rem);
+  }
+  .container.cover { text-align: center; }
+  pre, code {
+    font-family: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid rgba(148,163,184,0.15);
+    border-radius: 12px;
+    padding: 16px 18px;
+    overflow: auto;
+    font-size: clamp(.78rem, .95vw, .95rem);
+    line-height: 1.5;
+    color: #cbd5e1;
+  }
+  .tk-kw { color: #c084fc; }
+  .tk-cls { color: #38bdf8; }
+  .tk-str { color: #86efac; }
+  .tk-com { color: #64748b; font-style: italic; }
+  .tk-fn { color: #fbbf24; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .card {
+    background: rgba(30,41,59,0.7);
+    border: 1px solid rgba(148,163,184,0.18);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .card h3 { margin-top: 0; }
+  .pill {
+    display: inline-block;
+    background: rgba(56,189,248,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(56,189,248,0.35);
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: .82rem;
+    margin-right: 6px;
+  }
+
+  .nav {
+    position: fixed; bottom: 14px; right: 18px;
+    display: flex; gap: 10px; z-index: 20;
+    color: var(--fg-dim);
+    font-size: .85rem; align-items: center;
+  }
+  .nav button {
+    background: rgba(30,41,59,.8);
+    border: 1px solid rgba(148,163,184,0.25);
+    color: var(--fg);
+    border-radius: 10px;
+    padding: 6px 12px; cursor: pointer;
+    font-size: 1rem;
+  }
+  .nav button:hover { border-color: var(--accent); }
+  .counter { font-variant-numeric: tabular-nums; min-width: 60px; text-align: center; }
+
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    transition: width .35s ease;
+    z-index: 30;
+  }
+
+  .arrow-flow {
+    display: flex; gap: 14px; align-items: center; justify-content: center;
+    flex-wrap: wrap;
+  }
+  .arrow-flow .step {
+    background: rgba(56,189,248,0.08);
+    border: 1px solid rgba(56,189,248,.3);
+    padding: 10px 14px; border-radius: 12px;
+    font-weight: 600;
+  }
+  .arrow-flow .arrow { color: var(--accent); font-size: 1.4rem; }
+
+  .ascii {
+    font-family: "JetBrains Mono", Menlo, monospace;
+    white-space: pre;
+    line-height: 1.35;
+    color: var(--fg-dim);
+    background: var(--code-bg);
+    border-radius: 12px;
+    padding: 16px;
+    overflow: auto;
+    font-size: .85rem;
+  }
+
+  .help {
+    position: fixed; bottom: 14px; left: 18px; color: var(--fg-dim);
+    font-size: .8rem;
+  }
+  kbd {
+    background: rgba(148,163,184,0.12);
+    border: 1px solid rgba(148,163,184,0.3);
+    border-radius: 5px;
+    padding: 1px 6px; font-family: inherit;
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 -->
+  <section class="slide">
+    <div class="container cover">
+      <h1>Sistema de Doação</h1>
+      <p class="subtitle">JavaFX + SQLite — Programação Orientada a Objetos</p>
+      <p style="margin-top:1.5rem">
+        <span class="pill">POO</span>
+        <span class="pill">MVC</span>
+        <span class="pill">DAO</span>
+        <span class="pill">Singleton</span>
+        <span class="pill">Service Layer</span>
+      </p>
+      <p style="margin-top:2rem; color: var(--fg-dim)">use <kbd>→</kbd> ou <kbd>Espaço</kbd> para avançar</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="container">
+      <h2>O que o projeto faz</h2>
+      <p>Aplicativo desktop para gerenciar doações de itens (roupas, livros, alimentos, etc.) com cadastro, login, catálogo visual e upload de imagens.</p>
+      <div class="grid-3" style="margin-top:1rem">
+        <div class="card">
+          <h3>Autenticação</h3>
+          <p>Cadastro, login, edição de perfil. Sessão única ativa via Singleton.</p>
+        </div>
+        <div class="card">
+          <h3>Catálogo</h3>
+          <p>Grade de cards com busca, ilustração por categoria, edição inline e exclusão com confirmação.</p>
+        </div>
+        <div class="card">
+          <h3>Upload de imagens</h3>
+          <p>FileChooser nativo, cópia para diretório do usuário, preview e renderização real no card.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Stack técnica</h2>
+      <ul>
+        <li><strong>Java 17</strong> — records, switch moderno, text blocks (SQL multiline).</li>
+        <li><strong>JavaFX 21</strong> — UI declarativa via FXML + CSS estilo web.</li>
+        <li><strong>SQLite (sqlite-jdbc)</strong> — banco embutido em arquivo único (<code>doacao.db</code>).</li>
+        <li><strong>Maven</strong> — build, dependências, <code>mvn javafx:run</code>.</li>
+        <li><strong>JUnit 5</strong> — testes unitários.</li>
+        <li><strong>JPMS (module-info)</strong> — modularização explícita.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Arquitetura em camadas</h2>
+      <div class="ascii">
+┌────────────────────────────────────────────────────────┐
+│  View (FXML + CSS)        LoginView, CatalogoView...   │
+├────────────────────────────────────────────────────────┤
+│  Controller               LoginController, Catalogo... │
+├────────────────────────────────────────────────────────┤
+│  Service (regra negócio)  AutenticacaoService, Item... │
+├────────────────────────────────────────────────────────┤
+│  DAO (persistência)       UsuarioDAO, ItemDAO          │
+├────────────────────────────────────────────────────────┤
+│  Database (conexão)       shared.Database (SQLite)     │
+└────────────────────────────────────────────────────────┘
+      </div>
+      <p style="margin-top:.8rem; color: var(--fg-dim)">Cada camada só conhece a camada imediatamente abaixo. Trocar SQLite por Postgres = mexer só no DAO/Database.</p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Estrutura de pacotes</h2>
+      <div class="ascii">
+src/main/java/
+├── app/         App.java               (bootstrap JavaFX)
+├── auth/        Usuario, UsuarioDAO,
+│                AutenticacaoService,
+│                LoginController,
+│                CadastroController,
+│                PerfilController,
+│                Sessao
+├── item/        Item, ItemDAO,
+│                ItemService,
+│                CatalogoController,
+│                ItemFormController,
+│                ImagemStorage, ItemSeeder
+├── home/        Navegacao, PrincipalController
+├── doador/      Doador
+└── shared/      Database
+
+src/main/resources/
+├── auth/*.fxml  item/*.fxml  home/*.fxml
+└── styles/app.css
+      </div>
+      <p style="color:var(--fg-dim); margin-top:.6rem">Pacotes por <em>feature</em>, não por camada. Tudo de "item" mora junto.</p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="container">
+      <h2>POO — 4 pilares (lembrete)</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>1. Encapsulamento</h3>
+          <p>Campos <code>private</code> + getters/setters. Estado só muda por métodos da classe.</p>
+          <p><em>No projeto:</em> <code>Item</code>, <code>Usuario</code>.</p>
+        </div>
+        <div class="card">
+          <h3>2. Abstração</h3>
+          <p>Esconder detalhes. Quem usa <code>ItemService.cadastrar()</code> não sabe que existe SQL embaixo.</p>
+        </div>
+        <div class="card">
+          <h3>3. Herança</h3>
+          <p>Reuso por extensão. <code>App extends Application</code> herda ciclo de vida do JavaFX.</p>
+        </div>
+        <div class="card">
+          <h3>4. Polimorfismo</h3>
+          <p>Mesma interface, comportamento diferente. <code>equals()</code> sobrescrito em <code>Usuario</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Encapsulamento na prática</h2>
+<pre><span class="tk-kw">public class</span> <span class="tk-cls">Item</span> {
+    <span class="tk-kw">private int</span> id;            <span class="tk-com">// estado interno protegido</span>
+    <span class="tk-kw">private</span> String nome;
+    <span class="tk-kw">private</span> String imagemPath;
+
+    <span class="tk-kw">public</span> String <span class="tk-fn">getNome</span>()        { <span class="tk-kw">return</span> nome; }
+    <span class="tk-kw">public void</span>   <span class="tk-fn">setNome</span>(String n) { <span class="tk-kw">this</span>.nome = n; }
+}</pre>
+      <p>Acesso direto a <code>item.nome</code> é proibido. Quem precisa muda via setter — facilita validar, logar, ou trocar a representação interna depois sem quebrar quem usa.</p>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Abstração — esconder o "como"</h2>
+<pre><span class="tk-com">// Controller só pede ao Service. Não sabe que existe DAO, SQL, conexão.</span>
+<span class="tk-kw">boolean</span> ok = itemService.<span class="tk-fn">cadastrar</span>(nome, categoria, descricao, qtd, path);
+</pre>
+      <p>Trocar SQLite por arquivo JSON, REST, ou MongoDB = mexer só no DAO. Controller fica intacto. Isso é abstração funcionando.</p>
+      <p style="color:var(--fg-dim)">Regra de ouro: <em>"o chamador não deveria precisar saber detalhes técnicos para fazer seu trabalho"</em>.</p>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Herança — reuso por extensão</h2>
+<pre><span class="tk-kw">public class</span> <span class="tk-cls">App</span> <span class="tk-kw">extends</span> <span class="tk-cls">Application</span> {
+    <span class="tk-kw">@Override</span>
+    <span class="tk-kw">public void</span> <span class="tk-fn">start</span>(Stage stage) <span class="tk-kw">throws</span> Exception {
+        <span class="tk-com">// JavaFX chama isso pra mim. Eu só implemento.</span>
+    }
+}</pre>
+      <p><code>Application</code> é uma classe abstrata da biblioteca. <code>App</code> herda ciclo de vida (start, stop, launch). Reuso real — sem reescrever janela, threads, evento.</p>
+      <p style="color:var(--fg-dim)">Cuidado: herança gera acoplamento. Use só quando há relação verdadeira "é-um".</p>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Polimorfismo — comportamento por contrato</h2>
+<pre><span class="tk-kw">@Override</span>
+<span class="tk-kw">public boolean</span> <span class="tk-fn">equals</span>(Object o) {
+    <span class="tk-kw">if</span> (<span class="tk-kw">this</span> == o) <span class="tk-kw">return true</span>;
+    <span class="tk-kw">if</span> (!(o <span class="tk-kw">instanceof</span> Usuario)) <span class="tk-kw">return false</span>;
+    Usuario outro = (Usuario) o;
+    <span class="tk-kw">return</span> Objects.<span class="tk-fn">equals</span>(nomeUsuario, outro.nomeUsuario);
+}</pre>
+      <p><code>List.contains(usuario)</code> chama <code>equals</code>. O Java não sabe a regra de igualdade de <code>Usuario</code> — você ensina sobrescrevendo. Mesmo método, comportamento diferente por classe = polimorfismo.</p>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Design Patterns usados</h2>
+      <div class="grid-3">
+        <div class="card"><h3>Singleton</h3><p><code>Sessao</code> — uma sessão por execução.</p></div>
+        <div class="card"><h3>DAO</h3><p><code>UsuarioDAO</code>, <code>ItemDAO</code> — isolam SQL.</p></div>
+        <div class="card"><h3>Service Layer</h3><p><code>AutenticacaoService</code>, <code>ItemService</code> — regras de negócio.</p></div>
+        <div class="card"><h3>MVC</h3><p>FXML (view) + Controller + Model.</p></div>
+        <div class="card"><h3>Facade</h3><p><code>Navegacao</code> simplifica troca de telas.</p></div>
+        <div class="card"><h3>Factory leve</h3><p><code>Item</code> com construtores variados.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Singleton — <code>Sessao</code></h2>
+<pre><span class="tk-kw">public final class</span> <span class="tk-cls">Sessao</span> {
+    <span class="tk-kw">private static</span> Sessao instancia;
+    <span class="tk-kw">private</span> Usuario usuarioLogado;
+
+    <span class="tk-kw">private</span> <span class="tk-fn">Sessao</span>() {}            <span class="tk-com">// construtor privado!</span>
+
+    <span class="tk-kw">public static</span> Sessao <span class="tk-fn">getInstancia</span>() {
+        <span class="tk-kw">if</span> (instancia == <span class="tk-kw">null</span>) instancia = <span class="tk-kw">new</span> Sessao();
+        <span class="tk-kw">return</span> instancia;
+    }
+}</pre>
+      <p><strong>Quando usar:</strong> exatamente <em>uma</em> instância faz sentido (sessão, config global, cache).</p>
+      <p style="color:var(--fg-dim)"><strong>Cuidado:</strong> Singleton é estado global — dificulta testes. Use com parcimônia.</p>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide">
+    <div class="container">
+      <h2>DAO — Data Access Object</h2>
+<pre><span class="tk-kw">public class</span> <span class="tk-cls">ItemDAO</span> {
+    <span class="tk-kw">public boolean</span> <span class="tk-fn">salvar</span>(Item item) {
+        String sql = <span class="tk-str">"INSERT INTO itens ... VALUES (?, ?, ?, ?, ?)"</span>;
+        <span class="tk-kw">try</span> (Connection c = Database.<span class="tk-fn">conectar</span>();
+             PreparedStatement ps = c.<span class="tk-fn">prepareStatement</span>(sql)) {
+            ps.<span class="tk-fn">setString</span>(1, item.<span class="tk-fn">getNome</span>());
+            <span class="tk-com">// ...</span>
+            ps.<span class="tk-fn">executeUpdate</span>();
+            <span class="tk-kw">return true</span>;
+        } <span class="tk-kw">catch</span> (SQLException e) { <span class="tk-kw">return false</span>; }
+    }
+}</pre>
+      <p>Toda interação com banco passa por aqui. SQL nunca vaza para Controller. Banco trocou? Reescreva o DAO, o resto não percebe.</p>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Service Layer — regras de negócio</h2>
+<pre><span class="tk-kw">public boolean</span> <span class="tk-fn">cadastrar</span>(String nome, String categoria,
+                         String desc, <span class="tk-kw">int</span> qtd, String imagem) {
+    <span class="tk-kw">if</span> (nome == <span class="tk-kw">null</span> || nome.<span class="tk-fn">isBlank</span>()) <span class="tk-kw">return false</span>;
+    <span class="tk-kw">if</span> (categoria == <span class="tk-kw">null</span> || categoria.<span class="tk-fn">isBlank</span>()) <span class="tk-kw">return false</span>;
+    <span class="tk-kw">if</span> (qtd <= 0) <span class="tk-kw">return false</span>;
+
+    Item item = <span class="tk-kw">new</span> Item(nome.<span class="tk-fn">trim</span>(), categoria.<span class="tk-fn">trim</span>(), desc, qtd, imagem);
+    <span class="tk-kw">return</span> itemDAO.<span class="tk-fn">salvar</span>(item);
+}</pre>
+      <p>Service valida e orquestra. DAO só persiste. Controller só decide quem chamar. Cada camada tem <em>uma</em> responsabilidade (SRP do SOLID).</p>
+    </div>
+  </section>
+
+  <!-- 15 -->
+  <section class="slide">
+    <div class="container">
+      <h2>MVC no JavaFX</h2>
+      <div class="arrow-flow" style="margin-bottom:1rem">
+        <div class="step">View<br><small>FXML + CSS</small></div>
+        <div class="arrow">→</div>
+        <div class="step">Controller<br><small>onClick...</small></div>
+        <div class="arrow">→</div>
+        <div class="step">Service<br><small>regras</small></div>
+        <div class="arrow">→</div>
+        <div class="step">DAO<br><small>SQL</small></div>
+        <div class="arrow">→</div>
+        <div class="step">DB</div>
+      </div>
+      <p><strong>View:</strong> <code>CatalogoView.fxml</code> declara a UI. Sem código Java.</p>
+      <p><strong>Controller:</strong> <code>CatalogoController</code> reage a cliques, atualiza widgets.</p>
+      <p><strong>Model:</strong> <code>Item</code> + <code>ItemService</code> + <code>ItemDAO</code>.</p>
+    </div>
+  </section>
+
+  <!-- 16 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Facade — <code>Navegacao</code></h2>
+<pre><span class="tk-kw">public static void</span> <span class="tk-fn">abrirCatalogo</span>(Stage stage) {
+    <span class="tk-fn">trocarCena</span>(stage, <span class="tk-str">"/item/CatalogoView.fxml"</span>,
+               <span class="tk-str">"Catálogo de Doações"</span>, 900, 620);
+}</pre>
+      <p>Cliente chama uma linha. Por baixo: carrega FXML, injeta controller, aplica CSS, troca raiz da Scene <em>preservando</em> estado maximizado.</p>
+      <p style="color:var(--fg-dim)">Padrão Facade = uma porta de entrada simples para um subsistema complexo.</p>
+    </div>
+  </section>
+
+  <!-- 17 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Decisões de arquitetura</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>SQLite (não MySQL)</h3>
+          <p>Zero configuração, arquivo único, ótimo para projeto acadêmico desktop.</p>
+        </div>
+        <div class="card">
+          <h3>FXML separado do código</h3>
+          <p>Designer mexe na UI sem tocar em Java. Recompilação só do FXML.</p>
+        </div>
+        <div class="card">
+          <h3>Service entre Controller e DAO</h3>
+          <p>Validação fica em um lugar só. Não duplicar em cada controller.</p>
+        </div>
+        <div class="card">
+          <h3>Imagens fora do banco</h3>
+          <p>Arquivo copiado para <code>~/.projeto-doacao/imagens/</code>. Só o caminho vai pro DB. Mais leve.</p>
+        </div>
+        <div class="card">
+          <h3>Migração via PRAGMA</h3>
+          <p><code>ItemDAO</code> verifica colunas e faz <code>ALTER TABLE</code> sem quebrar DB antigo.</p>
+        </div>
+        <div class="card">
+          <h3>Pacotes por feature</h3>
+          <p>Tudo de "auth" junto. Coesão alta, acoplamento baixo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Fluxo: cadastrar item com imagem</h2>
+      <div class="ascii">
+Usuário clica "Novo Item"
+        │
+        ▼
+CatalogoController.onClickNovoItem()
+        │
+        ▼
+Navegacao.abrirFormularioItem(stage, null)
+        │
+        ▼
+ItemFormController (FileChooser → ImagemStorage.copiar)
+        │      arquivo copiado em ~/.projeto-doacao/imagens/UUID.png
+        ▼
+ItemService.cadastrar(nome, cat, desc, qtd, path)
+        │      valida campos
+        ▼
+ItemDAO.salvar(item)   ── INSERT INTO itens
+        │
+        ▼
+volta para Catálogo → renderiza card com ImageView
+      </div>
+    </div>
+  </section>
+
+  <!-- 19 -->
+  <section class="slide">
+    <div class="container">
+      <h2>SOLID em mini-doses</h2>
+      <ul>
+        <li><strong>S</strong>ingle Responsibility — DAO só persiste, Service só valida.</li>
+        <li><strong>O</strong>pen/Closed — adicionar nova categoria não exige mexer no Catálogo (mapa de emoji aberto a extensão).</li>
+        <li><strong>L</strong>iskov — <code>App</code> pode substituir <code>Application</code> em qualquer ponto que JavaFX chame.</li>
+        <li><strong>I</strong>nterface Segregation — controllers expõem só os <code>@FXML</code> que o FXML precisa.</li>
+        <li><strong>D</strong>ependency Inversion — Controller depende da abstração <em>Service</em>, não do DAO direto.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 20 -->
+  <section class="slide">
+    <div class="container">
+      <h2>Boas práticas aplicadas</h2>
+      <ul>
+        <li><strong>PreparedStatement</strong> em todo SQL — previne <em>SQL Injection</em>.</li>
+        <li><strong>try-with-resources</strong> — fecha conexão/statement sempre.</li>
+        <li><strong>Construtor privado</strong> em classes utilitárias (<code>Navegacao</code>, <code>Database</code>, <code>ImagemStorage</code>) — impede instanciar.</li>
+        <li><strong>final class</strong> em utilitários — impede herança acidental.</li>
+        <li><strong>module-info.java</strong> — só pacotes que precisam ficam <code>opens</code> para JavaFX.</li>
+        <li><strong>UUID</strong> em nomes de arquivos de imagem — evita colisão.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 21 -->
+  <section class="slide">
+    <div class="container">
+      <h2>O que poderia evoluir</h2>
+      <ul>
+        <li>Hash de senha (BCrypt) — hoje senha está em claro no DB.</li>
+        <li>Interface <code>Repository</code> entre Service e DAO — facilita mock em testes.</li>
+        <li>Observer/Listener no <code>ItemService</code> para auto-refresh do catálogo.</li>
+        <li>Internacionalização via <code>ResourceBundle</code>.</li>
+        <li>Builder para <code>Item</code> (já tem 4 construtores).</li>
+        <li>Testes de integração com banco em memória.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 22 -->
+  <section class="slide">
+    <div class="container cover">
+      <h1>Fim</h1>
+      <p class="subtitle">Dúvidas?</p>
+      <p style="margin-top:2rem; color: var(--fg-dim)">
+        <span class="pill">Encapsulamento</span>
+        <span class="pill">Abstração</span>
+        <span class="pill">Herança</span>
+        <span class="pill">Polimorfismo</span>
+        <span class="pill">Singleton</span>
+        <span class="pill">DAO</span>
+        <span class="pill">MVC</span>
+        <span class="pill">Facade</span>
+        <span class="pill">SOLID</span>
+      </p>
+      <p style="margin-top:2rem; color: var(--fg-dim)">obrigado!</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="anterior">‹</button>
+  <span class="counter" id="counter">1 / 22</span>
+  <button id="next" aria-label="próximo">›</button>
+</div>
+
+<div class="help">
+  <kbd>←</kbd> <kbd>→</kbd> navegar · <kbd>Home</kbd> início · <kbd>End</kbd> fim · <kbd>F</kbd> tela cheia
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  let idx = 0;
+
+  function show(n) {
+    idx = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+    location.hash = '#' + (idx + 1);
+  }
+
+  document.getElementById('prev').onclick = () => show(idx - 1);
+  document.getElementById('next').onclick = () => show(idx + 1);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(idx + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(idx - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); show(0); }
+    else if (e.key === 'End') { e.preventDefault(); show(slides.length - 1); }
+    else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  let startX = 0;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+  });
+
+  const start = parseInt((location.hash || '#1').slice(1), 10);
+  show(isNaN(start) ? 0 : start - 1);
+</script>
+</body>
+</html>
